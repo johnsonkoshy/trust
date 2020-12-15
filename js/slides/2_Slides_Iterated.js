@@ -31,7 +31,7 @@ SLIDES.push({
 		var o = self.objects;
 
 		o.iterated.introMachine(); // RING RING RING!
-
+		showRound(0)
 		// Words on top & bottom
 		self.add({
 			id:"topWords", type:"TextBox", text_id:"iterated_intro_top",
@@ -137,8 +137,8 @@ SLIDES.push({
 		];*/
 		var ROUNDS = [ // and min & max score...
 			{id:"tft", num:1}, // min 2, max 11
-			{id:"all_d", num:10}, // min -4, max 0
-			{id:"all_c", num:10}, // min 8, max 12
+			{id:"all_d", num:2}, // min -4, max 0
+			{id:"all_c", num:1}, // min 8, max 12
 			// {id:"grudge", num:10}, // min -1, max 11
 			// {id:"prober", num:10}, // min 2, max 15
 			// {id:"tft", num:10}, // min 2, max 11
@@ -151,6 +151,7 @@ SLIDES.push({
 		listen(self, "iterated/round/start", function(){
 			publish("buttonCheat/deactivate");
 			publish("buttonCooperate/deactivate");
+			
 		});
 		listen(self, "iterated/round/end", function(payoffA, payoffB){
 
@@ -165,16 +166,13 @@ SLIDES.push({
 			self.objects.scoreboard.addScore(payoffA, payoffB);
 			_.yourTotalScore += payoffA;
 			_showInfo();
+			
+			
+			
 
-			var roundInfoEl=document.createElement('div');
-			roundInfoEl.className="roundInfo"
+			
 
-			var innerRoundInfoEl = document.createElement('div');
-			innerRoundInfoEl.innerText=`Round ${ROUND_NUM}`
-			innerRoundInfoEl.className="roundInfoText";
 
-			roundInfoEl.appendChild(innerRoundInfoEl)
-			document.body.appendChild(roundInfoEl)
 			// Next round
 			ROUND_NUM++;
 			if(ROUND_NUM >= ROUNDS[ROUND_INDEX].num){
@@ -184,6 +182,7 @@ SLIDES.push({
 				ROUND_INDEX++; 
 				if(ROUND_INDEX >= ROUNDS.length){
 					publish("slideshow/scratch"); // NEXT SLIDE, WHATEVER
+					showRound(null, )
 				}else{
 
 					// NEW OPPONENT
@@ -192,19 +191,20 @@ SLIDES.push({
 						publish("iterated/newOpponent",[ROUNDS[ROUND_INDEX].id]);
 						self.objects.scoreboard.reset();
 						_showInfo();
-					},function(){
-						publish("buttonCheat/activate");
-						publish("buttonCooperate/activate");
+						showRound(ROUND_INDEX)
+								},function(){
+									publish("buttonCheat/activate");
+									publish("buttonCooperate/activate");
+								});
+
+							}
+
+						}else{
+							publish("buttonCheat/activate");
+							publish("buttonCooperate/activate");
+						}
+						
 					});
-
-				}
-
-			}else{
-				publish("buttonCheat/activate");
-				publish("buttonCooperate/activate");
-			}
-			
-		});
 
 		_showInfo();
 
@@ -284,21 +284,8 @@ SLIDES.push({
 		});
 
 		//////////////////////////////
-		//////////////////////////////
-
-		// Next...
-		self.add({
-			id:"next", type:"TextBox",
-			x:104, y:478, width:447, height:37,
-			text_id: "characters_teaser"
-		});
-
-		// Next Button!
-		self.add({
-			id:"next_button", type:"Button", x:544, y:471, size:"long",
-			text_id:"characters_button",
-			message:"slideshow/scratch"
-		});
+		
+		
 
 	},
 	onend: function(self){
@@ -306,3 +293,36 @@ SLIDES.push({
 	}
 
 });
+
+function showRound (ROUND_INDEX, customMessage){
+	//inform users about round information
+	ROUND_INDEX = ROUND_INDEX ? ROUND_INDEX : 0;
+	var existingRoundInfoEl = document.getElementsByClassName('roundInfo');
+	var doesRoundInfoElExist = existingRoundInfoEl.length ? true: false;
+	var innerRoundInfoEl= document.getElementsByClassName('roundInfoText')[0];
+	if(!doesRoundInfoElExist){
+		var roundInfoEl=document.createElement('div');
+		roundInfoEl.className="roundInfo"
+
+		innerRoundInfoEl = document.createElement('div');
+		
+		innerRoundInfoEl.className="roundInfoText";
+
+		roundInfoEl.appendChild(innerRoundInfoEl)
+		document.body.appendChild(roundInfoEl)
+	}else{
+		existingRoundInfoEl = existingRoundInfoEl[0];
+		existingRoundInfoEl.classList.remove('fadeOut')
+		existingRoundInfoEl.classList.remove('hide')
+	}
+	var roundTextTpl = customMessage ? customMessage : `Round ${ROUND_INDEX+1}`
+	innerRoundInfoEl.innerText=roundTextTpl
+	setTimeout(()=>{
+		var roundInfoEl=document.getElementsByClassName('roundInfo')[0]
+		roundInfoEl.classList.add('fadeOut')
+		setTimeout(()=>{
+			var roundInfoEl=document.getElementsByClassName('roundInfo')[0]
+			roundInfoEl.classList.add('hide')
+		})
+	}, 2500)
+}
