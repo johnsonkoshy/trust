@@ -137,7 +137,12 @@ function Iterated(config){
 	};
 
 	self.playOneRound = function(yourMove){
-
+		
+		observationData["turnActions"].push({
+			action:yourMove,
+			timeStamp: Date.now()
+		})
+		
 		// Make your moves!
 		var A = yourMove;
 		if(yourMove=="TRIP") A=PD.CHEAT;
@@ -175,11 +180,13 @@ function Iterated(config){
 	listen(self, "iterated/cooperate", function(){
 		publish("iterated/round/start");
 		self.playOneRound(PD.COOPERATE);
+		
 	});
 
 	listen(self, "iterated/cheat", function(){
 		publish("iterated/round/start");
 		self.playOneRound(PD.CHEAT);
+		
 	});
 
 	listen(self, "iterated/TRIP", function(){
@@ -191,8 +198,10 @@ function Iterated(config){
 		self.chooseOpponent(id);
 		self.playerA.resetFace();
 		self.playerB.resetFace();
+		observationData["turnActions"].push(`----New Opponent ${id}----`)
 	});
 	self.chooseOpponent("tft");
+	observationData["turnActions"].push(`----New Opponent tft----`)
 
 	///////////////////////////////////////////////
 	///////////// ADD, REMOVE, KILL ///////////////

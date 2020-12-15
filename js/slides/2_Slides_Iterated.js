@@ -1,3 +1,6 @@
+var observationData = {
+	turnActions:[]
+}
 SLIDES.push({
 
 	id: "iterated",
@@ -32,6 +35,7 @@ SLIDES.push({
 
 		o.iterated.introMachine(); // RING RING RING!
 		showRound(0)
+		observationData["gameStartTime"] = Date.now();
 		// Words on top & bottom
 		self.add({
 			id:"topWords", type:"TextBox", text_id:"iterated_intro_top",
@@ -49,6 +53,7 @@ SLIDES.push({
 			onclick:function(){
 				_.answer = "CHEAT";
 				publish("slideshow/next");
+			
 			}
 		});
 		self.add({
@@ -57,6 +62,7 @@ SLIDES.push({
 			onclick:function(){
 				_.answer = "COOPERATE";
 				publish("slideshow/next");
+				
 			}
 		});
 
@@ -136,7 +142,7 @@ SLIDES.push({
 			{id:"tft", num:1},
 		];*/
 		var ROUNDS = [ // and min & max score...
-			{id:"tft", num:1}, // min 2, max 11
+			{id:"tft", num:10}, // min 2, max 11
 			{id:"all_d", num:2}, // min -4, max 0
 			{id:"all_c", num:1}, // min 8, max 12
 			// {id:"grudge", num:10}, // min -1, max 11
@@ -147,7 +153,7 @@ SLIDES.push({
 		]; // TOTAL... MIN 7, MAX 49
 		ROUND_INDEX = 0;
 		ROUND_NUM = 0;
-
+		observationData["opponents"] = ROUNDS
 		listen(self, "iterated/round/start", function(){
 			publish("buttonCheat/deactivate");
 			publish("buttonCooperate/deactivate");
@@ -182,7 +188,8 @@ SLIDES.push({
 				ROUND_INDEX++; 
 				if(ROUND_INDEX >= ROUNDS.length){
 					publish("slideshow/scratch"); // NEXT SLIDE, WHATEVER
-					showRound(null, )
+					showRound(null, "Thank you for playing")
+					observationData["gameEndTime"] = Date.now();
 				}else{
 
 					// NEW OPPONENT
@@ -191,6 +198,7 @@ SLIDES.push({
 						publish("iterated/newOpponent",[ROUNDS[ROUND_INDEX].id]);
 						self.objects.scoreboard.reset();
 						_showInfo();
+						o.iterated.introMachine(); 
 						showRound(ROUND_INDEX)
 								},function(){
 									publish("buttonCheat/activate");
@@ -312,8 +320,8 @@ function showRound (ROUND_INDEX, customMessage){
 		document.body.appendChild(roundInfoEl)
 	}else{
 		existingRoundInfoEl = existingRoundInfoEl[0];
-		existingRoundInfoEl.classList.remove('fadeOut')
 		existingRoundInfoEl.classList.remove('hide')
+		existingRoundInfoEl.classList.remove('fadeOut')
 	}
 	var roundTextTpl = customMessage ? customMessage : `Round ${ROUND_INDEX+1}`
 	innerRoundInfoEl.innerText=roundTextTpl
@@ -323,6 +331,6 @@ function showRound (ROUND_INDEX, customMessage){
 		setTimeout(()=>{
 			var roundInfoEl=document.getElementsByClassName('roundInfo')[0]
 			roundInfoEl.classList.add('hide')
-		})
+		},1000)
 	}, 2500)
 }
