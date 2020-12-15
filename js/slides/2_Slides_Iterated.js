@@ -136,11 +136,14 @@ SLIDES.push({
 			{id:"tft", num:1},
 		];*/
 		var ROUNDS = [ // and min & max score...
-			{id:"tft", num:5}, // min 2, max 11
-			{id:"all_d", num:4}, // min -4, max 0
-			{id:"all_c", num:4}, // min 8, max 12
-			{id:"grudge", num:5}, // min -1, max 11
-			{id:"prober", num:7} // min 2, max 15
+			{id:"tft", num:1}, // min 2, max 11
+			{id:"all_d", num:10}, // min -4, max 0
+			{id:"all_c", num:10}, // min 8, max 12
+			// {id:"grudge", num:10}, // min -1, max 11
+			// {id:"prober", num:10}, // min 2, max 15
+			// {id:"tft", num:10}, // min 2, max 11
+			// {id:"all_d", num:10}, // min -4, max 0
+			// {id:"all_c", num:10},
 		]; // TOTAL... MIN 7, MAX 49
 		ROUND_INDEX = 0;
 		ROUND_NUM = 0;
@@ -163,6 +166,15 @@ SLIDES.push({
 			_.yourTotalScore += payoffA;
 			_showInfo();
 
+			var roundInfoEl=document.createElement('div');
+			roundInfoEl.className="roundInfo"
+
+			var innerRoundInfoEl = document.createElement('div');
+			innerRoundInfoEl.innerText=`Round ${ROUND_NUM}`
+			innerRoundInfoEl.className="roundInfoText";
+
+			roundInfoEl.appendChild(innerRoundInfoEl)
+			document.body.appendChild(roundInfoEl)
 			// Next round
 			ROUND_NUM++;
 			if(ROUND_NUM >= ROUNDS[ROUND_INDEX].num){

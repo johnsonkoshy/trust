@@ -234,6 +234,8 @@ function IteratedScoreboard(config){
 	var right = document.createElement("div");
 	self.dom.appendChild(right);
 
+
+	
 	// Reset
 	self.score = [0,0];
 	self.reset = function(){

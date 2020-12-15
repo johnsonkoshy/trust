@@ -1,5 +1,6 @@
 // THE TRUST GAME - COOPERATE, YA NO?
-SLIDES.push({
+SLIDES.push(
+	{
 
 	id: "oneoff",
 
